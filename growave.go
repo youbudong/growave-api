@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -23,11 +22,15 @@ type App struct {
 type Client struct {
 	Client *resty.Client
 
-	baseURL    *url.URL
-	pathPrefix string
-
+	baseURL *url.URL
 	// Services used for communicating with the API
 	User UserService
+}
+
+type Result struct {
+	Status  int64       `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func New(app App) *Client {
@@ -47,7 +50,6 @@ func New(app App) *Client {
 	if err != nil {
 		panic(err)
 	}
-	logrus.Info(baseURL.Path)
 
 	c := &Client{
 		Client:  restyclient,
