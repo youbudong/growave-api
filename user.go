@@ -41,7 +41,7 @@ type User struct {
 func (s *UserServiceOp) Search(field string, value string) (*User, error) {
 	var userResult *UserResult
 	var errResult *Result
-	_, err := s.client.Client.R().SetResult(userResult).SetError(errResult).SetQueryParams(map[string]string{"field": field, "value": value}).Get(userPath + searchPath)
+	_, err := s.client.Client.R().SetResult(&userResult).SetError(&errResult).SetQueryParams(map[string]string{"field": field, "value": value}).Get(userPath + searchPath)
 	if err != nil {
 		return nil, err
 	}
