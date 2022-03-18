@@ -1,5 +1,7 @@
 package growaveapi
 
+import "github.com/sirupsen/logrus"
+
 const (
 	userPath   = "/users"
 	searchPath = "/search"
@@ -31,7 +33,10 @@ type User struct {
 
 func (s *UserServiceOp) Search(field string, value string) (*User, error) {
 	var user User
-	_, err := s.client.Client.R().SetResult(&Result{Data: user}).Get(userPath + searchPath)
+	result := Result{Data: user}
+	_, err := s.client.Client.R().SetResult(&result).SetQueryParams(map[string]string{"field": field, "value": value}).Get(userPath + searchPath)
+	logrus.Info(result)
+	logrus.Info(user)
 	if err != nil {
 		return nil, err
 	}
