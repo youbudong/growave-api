@@ -15,6 +15,7 @@ func TestNew(t *testing.T) {
 		want *Client
 	}{
 		// TODO: Add test cases.
+		{name: "d", args: args{App{"asdasd", "asdasd", []string{}}}, want: &Client{}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -41,13 +42,20 @@ func New(app App) *Client {
 
 	client := cfg.Client(context.Background())
 	restyclient := resty.NewWithClient(client)
-
-	baseURL, _ := url.Parse(baseURL)
+	logrus.Info(restyclient)
+	baseURL, err := url.Parse(baseURL)
+	if err != nil {
+		panic(err)
+	}
 
 	c := &Client{
 		Client:     restyclient,
 		baseURL:    baseURL,
 		pathPrefix: defaultApiPathPrefix,
 	}
+
+	c.User = &UserServiceOp{client: c}
+	logrus.Info(c)
+
 	return c
 }

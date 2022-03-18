@@ -6,9 +6,6 @@ const (
 )
 
 type UserService interface {
-	Get(int64, interface{}) (*User, error)
-	Put(User) (*User, error)
-	List(interface{}) ([]User, error)
 	Search(field string, value string) (*User, error)
 }
 
@@ -32,7 +29,7 @@ type User struct {
 	ReferLink      string `json:"refer_link,omitempty"`
 }
 
-func (s *UserServiceOp) Search(options interface{}) (*User, error) {
+func (s *UserServiceOp) Search(field string, value string) (*User, error) {
 	var user User
 	_, err := s.client.Client.R().SetResult(&user).Get(userPath + searchPath)
 	if err != nil {
