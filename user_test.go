@@ -10,6 +10,7 @@ func TestUserServiceOp_Search(t *testing.T) {
 		field string
 		value string
 	}
+	client := New(App{"c8e1a3759983105eb277dcc3e9212ee1", "32995ac9a2de1506b2197995944a3fee", []string{}})
 	tests := []struct {
 		name    string
 		s       *UserServiceOp
@@ -18,6 +19,7 @@ func TestUserServiceOp_Search(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{name: "", s: &UserServiceOp{client}, args: args{field: "email", value: "alanal@qq.com"}, want: &User{}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

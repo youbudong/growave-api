@@ -1,6 +1,8 @@
 package growaveapi
 
-import "github.com/sirupsen/logrus"
+import (
+	"errors"
+)
 
 const (
 	userPath   = "/users"
@@ -9,7 +11,7 @@ const (
 
 type UserResult struct {
 	Result
-	Data User
+	Data User `json:"data,omitempty"`
 }
 
 type UserService interface {
@@ -37,12 +39,14 @@ type User struct {
 }
 
 func (s *UserServiceOp) Search(field string, value string) (*User, error) {
-	var result UserResult
-	_, err := s.client.Client.R().SetResult(&result).SetQueryParams(map[string]string{"field": field, "value": value}).Get(userPath + searchPath)
-	logrus.Info(result)
-	logrus.Info(result.Data)
+	var userResult *UserResult
+	var errResult *Result
+	_, err := s.client.Client.R().SetResult(userResult).SetError(errResult).SetQueryParams(map[string]string{"field": field, "value": value}).Get(userPath + searchPath)
 	if err != nil {
 		return nil, err
 	}
-	return &result.Data, nil
+	if errResult != nil {
+		return nil, errors.New(errResult.Message)
+	}
+	return &userResult.Data, nil
 }
