@@ -10,9 +10,8 @@ import (
 )
 
 const (
-	baseURL              = "https://growave.io"
-	defaultHttpTimeout   = 10
-	defaultApiPathPrefix = "/api"
+	baseURL            = "https://growave.io/api"
+	defaultHttpTimeout = 10
 )
 
 type App struct {
@@ -36,26 +35,25 @@ func New(app App) *Client {
 	cfg := clientcredentials.Config{
 		ClientID:     app.ClientID,
 		ClientSecret: app.ClientSecret,
-		TokenURL:     baseURL + defaultApiPathPrefix + "/access_token",
+		TokenURL:     baseURL + "/access_token",
 		Scopes:       app.Scopes,
 	}
 
 	client := cfg.Client(context.Background())
 	restyclient := resty.NewWithClient(client)
-	logrus.Info(restyclient)
+	restyclient.SetBaseURL(baseURL)
+
 	baseURL, err := url.Parse(baseURL)
 	if err != nil {
 		panic(err)
 	}
+	logrus.Info(baseURL.Path)
 
 	c := &Client{
-		Client:     restyclient,
-		baseURL:    baseURL,
-		pathPrefix: defaultApiPathPrefix,
+		Client:  restyclient,
+		baseURL: baseURL,
 	}
 
 	c.User = &UserServiceOp{client: c}
-	logrus.Info(c)
-
 	return c
 }
