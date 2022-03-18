@@ -1,4 +1,4 @@
-module growave-api
+module github.com/youbudong/growave-api
 
 go 1.17
 
