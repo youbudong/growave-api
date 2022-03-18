@@ -7,6 +7,11 @@ const (
 	searchPath = "/search"
 )
 
+type UserResult struct {
+	Result
+	Data User
+}
+
 type UserService interface {
 	Search(field string, value string) (*User, error)
 }
@@ -32,13 +37,12 @@ type User struct {
 }
 
 func (s *UserServiceOp) Search(field string, value string) (*User, error) {
-	var user User
-	result := Result{Data: user}
+	var result UserResult
 	_, err := s.client.Client.R().SetResult(&result).SetQueryParams(map[string]string{"field": field, "value": value}).Get(userPath + searchPath)
 	logrus.Info(result)
-	logrus.Info(user)
+	logrus.Info(result.Data)
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return &result.Data, nil
 }
