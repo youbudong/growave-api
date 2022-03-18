@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	baseURL              = "https://growave.io/"
+	baseURL              = "https://growave.io"
 	defaultHttpTimeout   = 10
-	defaultApiPathPrefix = "api"
+	defaultApiPathPrefix = "/api"
 )
 
 type App struct {
@@ -25,6 +25,9 @@ type Client struct {
 
 	baseURL    *url.URL
 	pathPrefix string
+
+	// Services used for communicating with the API
+	User UserService
 }
 
 func New(app App) *Client {
