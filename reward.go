@@ -15,11 +15,6 @@ type discountResult struct {
 	Data Discount
 }
 
-type discountsResult struct {
-	Result
-	Data *[]Discount
-}
-
 type RewardService interface {
 	UserRedeemReward(string, int64) (*Discount, error)
 	GetUserDiscounts(string) ([]*Discount, error)
