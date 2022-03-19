@@ -49,7 +49,7 @@ func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discoun
 func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
 	var discountsResult discountsResult
 	var errResult *Result
-	_, err := s.client.Client.R().SetResult(&discountsResult).SetQueryParam("email", email).SetError(&errResult).Post(rewardPath + discountsPath)
+	_, err := s.client.Client.R().SetResult(&discountsResult).SetQueryParam("email", email).SetError(&errResult).Get(rewardPath + discountsPath)
 	if err != nil {
 		return nil, err
 	}
