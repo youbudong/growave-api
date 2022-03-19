@@ -15,12 +15,12 @@ type discountResult struct {
 
 type discountsResult struct {
 	Result
-	Data []*Discount
+	Data *[]*Discount
 }
 
 type RewardService interface {
 	UserRedeemReward(string, int64) (*Discount, error)
-	GetUserDiscounts(string) ([]*Discount, error)
+	GetUserDiscounts(string) (*[]*Discount, error)
 }
 
 type RewardServiceOp struct {
@@ -46,7 +46,7 @@ func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discoun
 	return &discountResult.Data, nil
 }
 
-func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
+func (s *RewardServiceOp) GetUserDiscounts(email string) (*[]*Discount, error) {
 	var discountsResult discountsResult
 	var errResult *Result
 	_, err := s.client.Client.R().SetResult(&discountsResult).SetQueryParam("email", email).SetError(&errResult).Get(rewardPath + discountsPath)
