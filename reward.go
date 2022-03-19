@@ -1,6 +1,8 @@
 package growaveapi
 
-import "errors"
+import (
+	"errors"
+)
 
 const (
 	rewardPath    = "/reward"
@@ -15,12 +17,12 @@ type discountResult struct {
 
 type discountsResult struct {
 	Result
-	Data *[]*Discount
+	Data *[]Discount
 }
 
 type RewardService interface {
 	UserRedeemReward(string, int64) (*Discount, error)
-	GetUserDiscounts(string) (*[]*Discount, error)
+	GetUserDiscounts(string) ([]*Discount, error)
 }
 
 type RewardServiceOp struct {
@@ -46,15 +48,15 @@ func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discoun
 	return &discountResult.Data, nil
 }
 
-func (s *RewardServiceOp) GetUserDiscounts(email string) (*[]*Discount, error) {
-	var discountsResult discountsResult
+func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
+	var discounts []*Discount
 	var errResult *Result
-	_, err := s.client.Client.R().SetResult(&discountsResult).SetQueryParam("email", email).SetError(&errResult).Get(rewardPath + discountsPath)
+	_, err := s.client.Client.R().SetResult(&Result{Data: &discounts}).SetQueryParam("email", email).SetError(&errResult).Get(rewardPath + discountsPath)
 	if err != nil {
 		return nil, err
 	}
 	if errResult != nil {
 		return nil, errors.New(errResult.Message)
 	}
-	return discountsResult.Data, nil
+	return discounts, nil
 }
