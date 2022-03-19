@@ -1,24 +1,60 @@
 package growaveapi
 
-type RewardService interface {
-	Get(int64, interface{}) (*Reward, error)
-	Put(Reward) (*Reward, error)
-	List(interface{}) ([]Reward, error)
-	Search(string) (*Reward, error)
+import "errors"
+
+const (
+	rewardPath    = "/reward"
+	redeemPath    = "/redeem"
+	discountsPath = "/discounts"
+)
+
+type discountResult struct {
+	Result
+	Data Discount
 }
 
-type Reward struct {
-	RewardId int64 `json:"user_id,omitempty"`
-	// CustomerId     string `json:"customer_id,omitempty"`
-	// Email          string `json:"email,omitempty"`
-	// FirstName      string `json:"first_name,omitempty"`
-	// LastName       string `json:"last_name,omitempty"`
-	// PhotoUrl       string `json:"photo_url,omitempty"`
-	// About          string `json:"about,omitempty"`
-	// Birthdate      string `json:"birthdate,omitempty"`
-	// ProfileAddress string `json:"profile_address,omitempty"`
-	// Rewardname     string `json:"username,omitempty"`
-	// Privacy        string `json:"privacy,omitempty"`
-	// Points         string `json:"points,omitempty"`
-	// ReferLink      string `json:"refer_link,omitempty"`
+type discountsResult struct {
+	Result
+	Data []*Discount
+}
+
+type RewardService interface {
+	UserRedeemReward(string, int64) (*Discount, error)
+	GetUserDiscounts(string) ([]*Discount, error)
+}
+
+type RewardServiceOp struct {
+	client *Client
+}
+
+type Discount struct {
+	Title        string `json:"title,omitempty"`
+	DiscountCode string `json:"discount_code,omitempty"`
+	Type         string `json:"type,omitempty"`
+}
+
+func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discount, error) {
+	var discountResult *discountResult
+	var errResult *Result
+	_, err := s.client.Client.R().SetResult(&discountResult).SetBody(map[string]interface{}{"email": email, "rule_id": ruleId}).SetError(&errResult).Post(rewardPath + redeemPath)
+	if err != nil {
+		return nil, err
+	}
+	if errResult != nil {
+		return nil, errors.New(errResult.Message)
+	}
+	return &discountResult.Data, nil
+}
+
+func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
+	var discountsResult discountsResult
+	var errResult *Result
+	_, err := s.client.Client.R().SetResult(&discountsResult).SetQueryParam("email", email).SetError(&errResult).Post(rewardPath + redeemPath)
+	if err != nil {
+		return nil, err
+	}
+	if errResult != nil {
+		return nil, errors.New(errResult.Message)
+	}
+	return discountsResult.Data, nil
 }

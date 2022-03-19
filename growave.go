@@ -24,7 +24,8 @@ type Client struct {
 
 	baseURL *url.URL
 	// Services used for communicating with the API
-	User UserService
+	User   UserService
+	Reward RewardService
 }
 
 type Result struct {
@@ -57,5 +58,7 @@ func New(app App) *Client {
 	}
 
 	c.User = &UserServiceOp{client: c}
+	c.Reward = &RewardServiceOp{client: c}
+
 	return c
 }
