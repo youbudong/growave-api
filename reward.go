@@ -38,13 +38,7 @@ type UserActivitie struct {
 	RewardingType string      `json:"rewarding_type,omitempty"`
 	Spend         int64       `json:"spend,omitempty"`
 	GiftCardCode  interface{} `json:"gift_card_code,omitempty"`
-	SpendingRule  struct {
-		Id          string `json:"id"`
-		Title       string `json:"title,omitempty"`
-		Type        string `json:"type,omitempty"`
-		PointsPrice string `json:"points_price,omitempty"`
-		Status      string `json:"status,omitempty"`
-	} `json:"spending_rule"`
+	SpendingRule  interface{} `json:"spending_rule"`
 }
 
 func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discount, error) {
