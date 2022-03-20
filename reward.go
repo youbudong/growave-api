@@ -5,9 +5,10 @@ import (
 )
 
 const (
-	rewardPath    = "/reward"
-	redeemPath    = "/redeem"
-	discountsPath = "/discounts"
+	rewardPath     = "/reward"
+	redeemPath     = "/redeem"
+	discountsPath  = "/discounts"
+	activitiesPath = "/activities"
 )
 
 type discountResult struct {
@@ -18,6 +19,7 @@ type discountResult struct {
 type RewardService interface {
 	UserRedeemReward(string, int64) (*Discount, error)
 	GetUserDiscounts(string) ([]*Discount, error)
+	GetUserActivities(string) ([]*UserActivitie, error)
 }
 
 type RewardServiceOp struct {
@@ -28,6 +30,21 @@ type Discount struct {
 	Title        string `json:"title,omitempty"`
 	DiscountCode string `json:"discount_code,omitempty"`
 	Type         string `json:"type,omitempty"`
+}
+
+type UserActivitie struct {
+	Id            int64       `json:"id"`
+	Type          string      `json:"type,omitempty"`
+	RewardingType string      `json:"rewarding_type,omitempty"`
+	Spend         int64       `json:"spend,omitempty"`
+	GiftCardCode  interface{} `json:"gift_card_code,omitempty"`
+	SpendingRule  struct {
+		Id          string `json:"id"`
+		Title       string `json:"title,omitempty"`
+		Type        string `json:"type,omitempty"`
+		PointsPrice string `json:"points_price,omitempty"`
+		Status      string `json:"status,omitempty"`
+	} `json:"spending_rule"`
 }
 
 func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discount, error) {
@@ -54,4 +71,17 @@ func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
 		return nil, errors.New(errResult.Message)
 	}
 	return discounts, nil
+}
+
+func (s *RewardServiceOp) GetUserActivities(email string) ([]*UserActivitie, error) {
+	var userActivities []*UserActivitie
+	var errResult *Result
+	_, err := s.client.Client.R().SetResult(&Result{Data: &userActivities}).SetQueryParam("email", email).SetError(&errResult).Get(rewardPath + activitiesPath)
+	if err != nil {
+		return nil, err
+	}
+	if errResult != nil {
+		return nil, errors.New(errResult.Message)
+	}
+	return userActivities, nil
 }
