@@ -18,10 +18,10 @@ type discountResult struct {
 }
 
 type RewardService interface {
-	UserRedeemReward(string, int64) (*Discount, error)
-	RedeemEarn(string, string, int64) (*int64, error)
-	GetUserDiscounts(string) ([]*Discount, error)
-	GetUserActivities(string) ([]*UserActivitie, error)
+	UserRedeemReward(email string, ruleId int64) (*Discount, error)
+	RedeemEarn(email string, ruleType string, points int64) (*int64, error)
+	GetUserDiscounts(email string) ([]*Discount, error)
+	GetUserActivities(email string) ([]*UserActivitie, error)
 }
 
 type RewardServiceOp struct {
