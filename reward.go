@@ -6,6 +6,7 @@ import (
 
 const (
 	rewardPath     = "/reward"
+	earnPath       = "/earn"
 	redeemPath     = "/redeem"
 	discountsPath  = "/discounts"
 	activitiesPath = "/activities"
@@ -18,6 +19,7 @@ type discountResult struct {
 
 type RewardService interface {
 	UserRedeemReward(string, int64) (*Discount, error)
+	RedeemEarn(string, string, int64) (*int64, error)
 	GetUserDiscounts(string) ([]*Discount, error)
 	GetUserActivities(string) ([]*UserActivitie, error)
 }
@@ -41,6 +43,7 @@ type UserActivitie struct {
 	SpendingRule  interface{} `json:"spending_rule"`
 }
 
+// 兑换奖励
 func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discount, error) {
 	var discountResult *discountResult
 	var errResult *Result
@@ -54,6 +57,21 @@ func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discoun
 	return &discountResult.Data, nil
 }
 
+// 发放积分
+func (s *RewardServiceOp) RedeemEarn(email string, ruleType string, points int64) (*int64, error) {
+	var pointsR *int64
+	var errResult *Result
+	_, err := s.client.Client.R().SetResult(&Result{Data: &pointsR}).SetBody(map[string]interface{}{"email": email, "rule_type": ruleType, "points": points}).SetError(&errResult).Post(rewardPath + earnPath)
+	if err != nil {
+		return nil, err
+	}
+	if errResult != nil {
+		return nil, errors.New(errResult.Message)
+	}
+	return pointsR, nil
+}
+
+// 获取用户折扣列表
 func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
 	var discounts []*Discount
 	var errResult *Result
@@ -67,6 +85,7 @@ func (s *RewardServiceOp) GetUserDiscounts(email string) ([]*Discount, error) {
 	return discounts, nil
 }
 
+// 获取用户活动列表
 func (s *RewardServiceOp) GetUserActivities(email string) ([]*UserActivitie, error) {
 	var userActivities []*UserActivitie
 	var errResult *Result
