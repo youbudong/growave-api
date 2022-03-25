@@ -19,13 +19,17 @@ type discountResult struct {
 
 type RewardService interface {
 	UserRedeemReward(email string, ruleId int64) (*Discount, error)
-	RedeemEarn(email string, ruleType string, points int64) (*int64, error)
+	RedeemEarn(email string, ruleType string, points int64) (*EarnedPoints, error)
 	GetUserDiscounts(email string) ([]*Discount, error)
 	GetUserActivities(email string) ([]*UserActivitie, error)
 }
 
 type RewardServiceOp struct {
 	client *Client
+}
+
+type EarnedPoints struct {
+	EarnedPoints int64 `json:"earned_points"`
 }
 
 type Discount struct {
@@ -58,8 +62,8 @@ func (s *RewardServiceOp) UserRedeemReward(email string, ruleId int64) (*Discoun
 }
 
 // 发放积分
-func (s *RewardServiceOp) RedeemEarn(email string, ruleType string, points int64) (*int64, error) {
-	var pointsR *int64
+func (s *RewardServiceOp) RedeemEarn(email string, ruleType string, points int64) (*EarnedPoints, error) {
+	var pointsR *EarnedPoints
 	var errResult *Result
 	_, err := s.client.Client.R().SetResult(&Result{Data: &pointsR}).SetBody(map[string]interface{}{"email": email, "rule_type": ruleType, "points": points}).SetError(&errResult).Post(rewardPath + earnPath)
 	if err != nil {
