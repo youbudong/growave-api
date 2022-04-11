@@ -29,7 +29,7 @@ type RewardServiceOp struct {
 }
 
 type EarnedPoints struct {
-	EarnedPoints int64 `json:"earned_points"`
+	EarnedPoints float64 `json:"earned_points"`
 }
 
 type Discount struct {
