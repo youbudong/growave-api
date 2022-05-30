@@ -5,11 +5,12 @@ import (
 )
 
 const (
-	rewardPath     = "/reward"
-	earnPath       = "/earn"
-	redeemPath     = "/redeem"
-	discountsPath  = "/discounts"
-	activitiesPath = "/activities"
+	rewardPath            = "/reward"
+	earnPath              = "/earn"
+	redeemPath            = "/redeem"
+	discountsPath         = "/discounts"
+	activitiesPath        = "/activities"
+	editPointsBalancePath = "/editPointsBalance"
 )
 
 type discountResult struct {
@@ -22,6 +23,7 @@ type RewardService interface {
 	RedeemEarn(email string, ruleType string, points float64) (*EarnedPoints, error)
 	GetUserDiscounts(email string) ([]*Discount, error)
 	GetUserActivities(email string) ([]*UserActivitie, error)
+	EditPointsBalance(email string, points int64, comment string) (err error)
 }
 
 type RewardServiceOp struct {
@@ -101,4 +103,18 @@ func (s *RewardServiceOp) GetUserActivities(email string) ([]*UserActivitie, err
 		return nil, errors.New(errResult.Message)
 	}
 	return userActivities, nil
+}
+
+// 编辑用户积分
+func (s *RewardServiceOp) EditPointsBalance(email string, points int64, comment string) (err error) {
+	var errResult *Result
+	data := map[string]interface{}{"email": email, "points": points, "comment": comment}
+	_, err = s.client.Client.R().SetResult(&Result{Data: nil}).SetBody(data).SetError(&errResult).Post(rewardPath + editPointsBalancePath)
+	if err != nil {
+		return
+	}
+	if errResult != nil {
+		err = errors.New(errResult.Message)
+	}
+	return
 }
