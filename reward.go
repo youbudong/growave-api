@@ -23,7 +23,7 @@ type RewardService interface {
 	RedeemEarn(email string, ruleType string, points float64) (*EarnedPoints, error)
 	GetUserDiscounts(email string) ([]*Discount, error)
 	GetUserActivities(email string) ([]*UserActivitie, error)
-	EditPointsBalance(email string, points int64, comment string) (err error)
+	EditPointsBalance(email string, points int64, comment string) (res EditPoints, err error)
 }
 
 type RewardServiceOp struct {
@@ -47,6 +47,12 @@ type UserActivitie struct {
 	Spend         int64       `json:"spend,omitempty"`
 	GiftCardCode  interface{} `json:"gift_card_code,omitempty"`
 	SpendingRule  interface{} `json:"spending_rule"`
+}
+
+type EditPoints struct {
+	Points  int64  `json:"points"`
+	Comment string `json:"comment,omitempty"`
+	Email   string `json:"email,omitempty"`
 }
 
 // 兑换奖励
@@ -106,10 +112,10 @@ func (s *RewardServiceOp) GetUserActivities(email string) ([]*UserActivitie, err
 }
 
 // 编辑用户积分
-func (s *RewardServiceOp) EditPointsBalance(email string, points int64, comment string) (err error) {
+func (s *RewardServiceOp) EditPointsBalance(email string, points int64, comment string) (res EditPoints, err error) {
 	var errResult *Result
 	data := map[string]interface{}{"email": email, "points": points, "comment": comment}
-	_, err = s.client.Client.R().SetResult(&Result{Data: nil}).SetBody(data).SetError(&errResult).Post(rewardPath + editPointsBalancePath)
+	_, err = s.client.Client.R().SetResult(&Result{Data: res}).SetBody(data).SetError(&errResult).Post(rewardPath + editPointsBalancePath)
 	if err != nil {
 		return
 	}
