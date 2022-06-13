@@ -2,8 +2,6 @@ package growaveapi
 
 import (
 	"errors"
-
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -118,7 +116,6 @@ func (s *RewardServiceOp) EditPointsBalance(email string, points int64, comment 
 	var errResult *Result
 	data := map[string]interface{}{"email": email, "points": points, "comment": comment}
 	_, err = s.client.Client.R().SetResult(&Result{Data: &res}).SetBody(data).SetError(&errResult).Post(rewardPath + editPointsBalancePath)
-	logrus.Info(res)
 	if err != nil {
 		return
 	}
